@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trivia Interactiva</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+    .option {
+      background-color: #e0e0e0;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .option.correct { background-color: #4CAF50; color: white; }
+    .option.incorrect { background-color: #F44336; color: white; }
+    button:disabled { background-color: #ccc; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Trivia de Conocimientos Generales</h1>
+    <p id="question"></p>
+    <div id="options"></div>
+    <button id="next" disabled>Siguiente</button>
+    <p id="feedback" class="animate__animated"></p>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "¿Cuál es el planeta más grande del sistema solar?", options: ["Tierra", "Marte", "Júpiter", "Saturno"], answer: 2 },
+      { question: "¿Quién pintó la Mona Lisa?", options: ["Van Gogh", "Da Vinci", "Picasso", "Miguel Ángel"], answer: 1 },
+      // Agregar 8 preguntas más aquí
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const nextButton = document.getElementById('next');
+    const feedbackElement = document.getElementById('feedback');
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      questionElement.textContent = q.question;
+      optionsElement.innerHTML = "";
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('div');
+        btn.textContent = opt;
+        btn.classList.add('option');
+        btn.onclick = () => checkAnswer(index, btn);
+        optionsElement.appendChild(btn);
+      });
+      nextButton.disabled = true;
+    }
+
+    function checkAnswer(index, btn) {
+      const correctIndex = questions[currentQuestion].answer;
+      document.querySelectorAll('.option').forEach((el, i) => {
+        el.classList.add(i === correctIndex ? 'correct' : (i === index ? 'incorrect' : ''));
+        el.onclick = null;
+      });
+      if (index === correctIndex) {
+        score++;
+      }
+      nextButton.disabled = false;
+    }
+
+    nextButton.onclick = () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    };
+
+    function showResults() {
+      questionElement.textContent = `¡Trivia Finalizada! Obtuviste ${score} de ${questions.length}`;
+      optionsElement.innerHTML = "";
+      nextButton.remove();
+      feedbackElement.textContent = score > 7 ? "¡Excelente trabajo!" : score > 4 ? "¡Buen esfuerzo!" : "Sigue practicando.";
+      feedbackElement.classList.add('animate__bounceIn');
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
